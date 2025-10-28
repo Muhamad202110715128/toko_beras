@@ -1,0 +1,56 @@
+body {
+            background-color: #f9f7f2;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .summary-card {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-4px);
+            background: #f4f4f0;
+        }
+
+        .summary-card h6 {
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .summary-card h4 {
+            color: #1e1e1e;
+            font-weight: 600;
+        }
+
+        .order-summary th {
+            background: #f3f2ec;
+        }
+
+        .btn-complete {
+            background-color: #0b4726;
+            color: white;
+            font-size: 1.1rem;
+            padding: 12px 0;
+            border-radius: 10px;
+        }
+
+        .btn-complete:hover {
+            background-color: #08391e;
+        }
+
+        a.card-link {
+            text-decoration: none;
+            color: inherit;
+        }

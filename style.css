@@ -1,0 +1,16 @@
+/* navbar side bar */
+.brand-shift {
+  transition: margin-left 0.3s;
+  margin-left: 250px; /* Sesuaikan dengan lebar sidebar */
+}
+    .navbar-toggler-icon {
+      filter: brightness(0) invert(1); /* buat icon putih */
+    }
+    .btn-hamburger {
+      filter: brightness(1,25); /* tingkatkan kecerahan tombol */
+      padding: .35rem .5rem;
+      border-radius: .375rem;
+      color: #fff;
+      background: transparent;
+      border: none;
+    }
