@@ -4,7 +4,7 @@ include '../includes/config.php';
 // ambil id dulu
 $id = (int)($_GET['id'] ?? 0);
 
-// Proses form harus dijalankan sebelum mengeluarkan HTML (include header)
+// Pr oses form harus dijalankan sebelum mengeluarkan HTML (include header)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tanggal = $_POST['tanggal'] ?? '';
     $tanggal_kadaluarsa = $_POST['tanggal_kadaluarsa'] ?? '';
@@ -40,6 +40,35 @@ $stmt->close();
 // setelah semua pemrosesan, include header dan tampilkan form
 include '../includes/header.php';
 ?>
+
+<!-- side bar -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+    <div class="offcanvas-header">
+        <div class="d-flex align-items-center">
+            <div class="user-avatar me-2" style="background: <?= htmlspecialchars($avatarBg) ?>;">
+                <?= $icon ?>
+            </div>
+            <div>
+                <div class="fw-bold"><?= htmlspecialchars($username ?: $roleLabel) ?></div>
+                <small class="text-muted"><?= htmlspecialchars($roleLabel) ?></small>
+            </div>
+        </div>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <div class="list-group list-group-flush">
+            <a href="/toko_beras/admin/dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
+            <a href="/toko_beras/Admin/stok_masuk.php" class="list-group-item list-group-item-action">Stok Masuk</a>
+            <a href="/toko_beras/admin/stok_keluar.php" class="list-group-item list-group-item-action">Stok Keluar</a>
+            <a href="/toko_beras/admin/low_stock.php" class="list-group-item list-group-item-action">Low Stock</a>
+            <div class="list-group-item">
+                <a href="/toko_beras/logout.php" class="btn btn-outline-danger w-100">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
 <div class="container">
     <h4>Edit Data Stok Masuk</h4>

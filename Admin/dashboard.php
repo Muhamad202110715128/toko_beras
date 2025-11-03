@@ -27,6 +27,7 @@ $stokTersedia = $stokMasuk - $stokKeluar;
 </head>
 
 <body>
+    <!-- side bar -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
         <div class="offcanvas-header">
             <div class="d-flex align-items-center">
@@ -42,10 +43,10 @@ $stokTersedia = $stokMasuk - $stokKeluar;
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush">
-                <a href="/toko_beras/dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
+                <a href="/toko_beras/Admin/dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
                 <a href="/toko_beras/Admin/stok_masuk.php" class="list-group-item list-group-item-action">Stok Masuk</a>
-                <a href="/toko_beras/dasboard/stok_keluar.php" class="list-group-item list-group-item-action">Stok Keluar</a>
-                <a href="/toko_beras/low_stock.php" class="list-group-item list-group-item-action">Low Stock</a>
+                <a href="/toko_beras/admin/stok_keluar.php" class="list-group-item list-group-item-action">Stok Keluar</a>
+                <a href="/toko_beras/admin/low_stock.php" class="list-group-item list-group-item-action">Low Stock</a>
                 <div class="list-group-item">
                     <a href="/toko_beras/logout.php" class="btn btn-outline-danger w-100">Logout</a>
                 </div>

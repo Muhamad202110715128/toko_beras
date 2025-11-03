@@ -9,9 +9,45 @@ include '../includes/header.php';
     }
 </style>
 
+<!-- side bar -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+    <div class="offcanvas-header">
+        <div class="d-flex align-items-center">
+            <div class="user-avatar me-2" style="background: <?= htmlspecialchars($avatarBg) ?>;">
+                <?= $icon ?>
+            </div>
+            <div>
+                <div class="fw-bold"><?= htmlspecialchars($username ?: $roleLabel) ?></div>
+                <small class="text-muted"><?= htmlspecialchars($roleLabel) ?></small>
+            </div>
+        </div>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <div class="list-group list-group-flush">
+            <a href="/toko_beras/admin/dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
+            <a href="/toko_beras/Admin/stok_masuk.php" class="list-group-item list-group-item-action">Stok Masuk</a>
+            <a href="/toko_beras/admin/stok_keluar.php" class="list-group-item list-group-item-action">Stok Keluar</a>
+            <a href="/toko_beras/admin/low_stock.php" class="list-group-item list-group-item-action">Low Stock</a>
+            <div class="list-group-item">
+                <a href="/toko_beras/logout.php" class="btn btn-outline-danger w-100">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <h5 class="card-title mb-0">Data Stok Masuk</h5>
+    <a href="input_stok_masuk.php" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Input Data
+    </a>
+</div>
+
+<hr>
 <div class="card">
     <div class="card-body">
-        <h5 class="card-title mb-3">Data Stok Masuk</h5>
+
 
         <?php $q = $koneksi->query("SELECT * FROM stok_masuk ORDER BY tanggal DESC, tanggal_kadaluarsa ASC"); ?>
 

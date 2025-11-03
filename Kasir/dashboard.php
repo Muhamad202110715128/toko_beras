@@ -38,6 +38,7 @@ $total_items = $total_items_data['total_item'] ?? 0;
 </head>
 
 <body>
+    <!-- side bar -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
         <div class="offcanvas-header">
             <div class="d-flex align-items-center">
@@ -53,10 +54,10 @@ $total_items = $total_items_data['total_item'] ?? 0;
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush">
-                <a href="/toko_beras/dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
-                <a href="/toko_beras/Admin/stok_masuk.php" class="list-group-item list-group-item-action">Stok Masuk</a>
-                <a href="/toko_beras/dasboard/stok_keluar.php" class="list-group-item list-group-item-action">Laporan</a>
-                <a href="/toko_beras/low_stock.php" class="list-group-item list-group-item-action">Low Stock</a>
+                <a href="/toko_beras/kasir/dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
+                <a href="/toko_beras/kasir/stok_masuk.php" class="list-group-item list-group-item-action">Stok Masuk</a>
+                <a href="/toko_beras/kasir/stok_keluar.php" class="list-group-item list-group-item-action">Laporan</a>
+                <a href="/toko_beras/kasir/low_stock.php" class="list-group-item list-group-item-action">Low Stock</a>
                 <div class="list-group-item">
                     <a href="/toko_beras/logout.php" class="btn btn-outline-danger w-100">Logout</a>
                 </div>
@@ -123,7 +124,7 @@ $total_items = $total_items_data['total_item'] ?? 0;
                             <?php if (!empty($penjualan)): ?>
                                 <?php foreach ($penjualan as $p): ?>
                                     <tr>
-                                        <td><?= htmlspecialchars($p['nama_produk']); ?></td>
+                                        <td><?= htmlspecialchars($p['jenis_beras']); ?></td>
                                         <td><?= htmlspecialchars($p['merk']); ?></td>
                                         <td>Rp<?= number_format($p['harga'], 2); ?></td>
                                         <td><?= $p['jumlah']; ?></td>
