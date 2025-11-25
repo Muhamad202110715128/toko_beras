@@ -81,13 +81,28 @@ include '../includes/header.php';
             <label>Tanggal Kadaluarsa</label>
             <input type="date" name="tanggal_kadaluarsa" class="form-control" value="<?= htmlspecialchars($data['tanggal_kadaluarsa'] ?? '') ?>">
         </div>
-        <div class="mb-3">
-            <label>Jenis Beras</label>
-            <input type="text" name="jenis_beras" class="form-control" value="<?= htmlspecialchars($data['jenis_beras'] ?? '') ?>" required>
+        <div class="col-md-4 mb-3">
+            <label>Jenis Beras</label><select name="id_jenis" class="form-select" required>
+                <option value="">-- Pilih Jenis Beras --</option>
+                <?php
+                $jenis = $koneksi->query("SELECT * FROM jenis_beras ORDER BY nama_jenis ASC");
+                while ($row = $jenis->fetch_assoc()) {
+                    echo "<option value='{$row['id_jenis']}'>{$row['nama_jenis']}</option>";
+                }
+                ?>
+            </select>
         </div>
-        <div class="mb-3">
-            <label>Merk Beras</label>
-            <input type="text" name="merk" class="form-control" value="<?= htmlspecialchars($data['merk'] ?? '') ?>">
+
+        <div class="col-md-4 mb-3">
+            <label>Merk Beras</label><select name="id_merk" class="form-select" required>
+                <option value="">-- Pilih Merk --</option>
+                <?php
+                $merk = $koneksi->query("SELECT * FROM merk_beras ORDER BY nama_merk ASC");
+                while ($row = $merk->fetch_assoc()) {
+                    echo "<option value='{$row['id_merk']}'>{$row['nama_merk']}</option>";
+                }
+                ?>
+            </select>
         </div>
         <div class="mb-3">
             <label>Jumlah (kg)</label>

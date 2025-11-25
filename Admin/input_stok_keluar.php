@@ -1,86 +1,214 @@
 <?php
 include '../includes/config.php';
 include '../includes/header.php';
+
+// =======================
+// AMBIL FILTER
+// =======================
+$filter_jenis = $_GET['jenis'] ?? '';
+$filter_merk  = $_GET['merk'] ?? '';
+
+// ambil daftar jenis & merk
+$jenis_q = $koneksi->query("SELECT nama_jenis FROM jenis_beras ORDER BY nama_jenis ASC");
+$merk_q  = $koneksi->query("SELECT nama_merk  FROM merk_beras ORDER BY nama_merk ASC");
+
+// =======================
+// QUERY STOK MASUK (dengan filter)
+// =======================
+$where = [];
+
+if ($filter_jenis !== '') {
+    $where[] = "jenis_beras = '" . $koneksi->real_escape_string($filter_jenis) . "'";
+}
+
+if ($filter_merk !== '') {
+    $where[] = "merk = '" . $koneksi->real_escape_string($filter_merk) . "'";
+}
+
+$sql = "SELECT * FROM stok_masuk";
+
+if (!empty($where)) {
+    $sql .= " WHERE " . implode(" AND ", $where);
+}
+
+$sql .= " ORDER BY tanggal DESC, tanggal_kadaluarsa ASC";
+
+$q = $koneksi->query($sql);
+
+// list modal
+$modal_list = [];
 ?>
 
-<!-- side bar -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
-    <div class="offcanvas-header">
-        <div class="d-flex align-items-center">
-            <div class="user-avatar me-2" style="background: <?= htmlspecialchars($avatarBg) ?>;">
-                <?= $icon ?>
-            </div>
-            <div>
-                <div class="fw-bold"><?= htmlspecialchars($username ?: $roleLabel) ?></div>
-                <small class="text-muted"><?= htmlspecialchars($roleLabel) ?></small>
-            </div>
-        </div>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+<style>
+    .table-detail thead th {
+        background: #f8f9fa;
+        font-weight: 700;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between mb-3">
+        <h4>📤 Input Stok Keluar</h4>
     </div>
-    <div class="offcanvas-body p-0">
-        <div class="list-group list-group-flush">
-            <a href="/toko_beras/admin/dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
-            <a href="/toko_beras/Admin/stok_masuk.php" class="list-group-item list-group-item-action">Stok Masuk</a>
-            <a href="/toko_beras/admin/stok_keluar.php" class="list-group-item list-group-item-action">Stok Keluar</a>
-            <a href="/toko_beras/admin/low_stock.php" class="list-group-item list-group-item-action">Low Stock</a>
-            <div class="list-group-item">
-                <a href="/toko_beras/logout.php" class="btn btn-outline-danger w-100">Logout</a>
+
+    <!-- ================================
+         FORM FILTER
+    ================================== -->
+    <form method="GET" class="row g-3 mb-4 p-3 border rounded bg-light">
+
+        <div class="col-md-4">
+            <label class="form-label mb-1">Jenis Beras</label>
+            <select name="jenis" class="form-select form-select-sm">
+                <option value="">-- Semua Jenis --</option>
+                <?php while ($j = $jenis_q->fetch_assoc()): ?>
+                    <option value="<?= $j['nama_jenis'] ?>"
+                        <?= ($filter_jenis == $j['nama_jenis']) ? 'selected' : '' ?>>
+                        <?= $j['nama_jenis'] ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label mb-1">Merk</label>
+            <select name="merk" class="form-select form-select-sm">
+                <option value="">-- Semua Merk --</option>
+                <?php while ($m = $merk_q->fetch_assoc()): ?>
+                    <option value="<?= $m['nama_merk'] ?>"
+                        <?= ($filter_merk == $m['nama_merk']) ? 'selected' : '' ?>>
+                        <?= $m['nama_merk'] ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+        </div>
+
+        <div class="col-md-4 d-flex align-items-end">
+            <button class="btn btn-primary btn-sm w-100">Terapkan Filter</button>
+        </div>
+
+    </form>
+
+    <!-- ================================
+         TABEL STOK MASUK
+    ================================== -->
+
+    <div class="card">
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-detail table-striped table-hover align-middle">
+                    <thead class="text-center">
+                        <tr>
+                            <th>No</th>
+                            <th>Tanggal</th>
+                            <th>Kadaluarsa</th>
+                            <th>Jenis Beras</th>
+                            <th>Merk</th>
+                            <th class="text-end">Jumlah (kg)</th>
+                            <th class="text-end">Harga Beli</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <?php
+                        if ($q && $q->num_rows > 0) {
+                            $no = 1;
+
+                            while ($row = $q->fetch_assoc()) {
+                                $id     = $row['id'];
+                                $tgl    = $row['tanggal'];
+                                $exp    = $row['tanggal_kadaluarsa'];
+                                $jenis  = $row['jenis_beras'];
+                                $merk   = $row['merk'];
+                                $jumlah = $row['jumlah'];
+                                $harga  = number_format($row['harga_beli'], 0, ',', '.');
+
+                                echo "
+                                <tr>
+                                    <td class='text-center'>$no</td>
+                                    <td>$tgl</td>
+                                    <td class='text-center'>$exp</td>
+                                    <td>$jenis</td>
+                                    <td class='text-center'>$merk</td>
+                                    <td class='text-end'>$jumlah</td>
+                                    <td class='text-end'>Rp $harga</td>
+                                    <td class='text-center'>
+                                        <button class='btn btn-primary btn-sm'
+                                                data-bs-toggle='modal'
+                                                data-bs-target='#modalKeluar_$id'>
+                                            Pilih
+                                        </button>
+                                    </td>
+                                </tr>
+                                ";
+
+                                // SIMPAN MODAL DALAM ARRAY
+                                $modal_list[] = "
+                                <div class='modal fade' id='modalKeluar_$id' tabindex='-1'>
+                                    <div class='modal-dialog'>
+                                        <form action='proses_stok_keluar.php' method='POST' class='modal-content'>
+
+                                            <div class='modal-header'>
+                                                <h5 class='modal-title'>Stok Keluar — $jenis ($merk)</h5>
+                                                <button type='button' class='btn-close' data-bs-dismiss='modal'></button>
+                                            </div>
+
+                                            <div class='modal-body'>
+
+                                                <input type='hidden' name='id_stok' value='$id'>
+
+                                                <div class='mb-3'>
+                                                    <label class='form-label'>Jumlah yang dikeluarkan (kg)</label>
+                                                    <input type='number' 
+                                                           name='jumlah_keluar' 
+                                                           class='form-control' 
+                                                           min='1' 
+                                                           max='$jumlah'
+                                                           required>
+                                                    <small class='text-muted'>Sisa stok: $jumlah kg</small>
+                                                </div>
+
+                                                <div class='mb-3'>
+                                                    <label class='form-label'>Deskripsi</label>
+                                                    <textarea name='deskripsi' 
+                                                              class='form-control' 
+                                                              rows='2'
+                                                              required></textarea>
+                                                </div>
+
+                                            </div>
+
+                                            <div class='modal-footer'>
+                                                <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Batal</button>
+                                                <button type='submit' class='btn btn-success'>Keluarkan</button>
+                                            </div>
+
+                                        </form>
+                                    </div>
+                                </div>
+                                ";
+
+                                $no++;
+                            }
+                        } else {
+                            echo "<tr><td colspan='8' class='text-center text-muted'>Tidak ada data stok masuk.</td></tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
             </div>
+
         </div>
     </div>
 </div>
 
-
-
-<h4>Input Stok Keluar (FEFO)</h4>
-<form action="proses_stok_keluar.php" method="POST">
-    <div class="row">
-        <div class="col-md-4 mb-3">
-            <label>Tanggal</label>
-            <input type="date" name="tanggal" class="form-control" required>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <label>Jenis Beras</label>
-            <input type="text" name="jenis_beras" class="form-control" placeholder="Contoh: Beras Putih" required>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <label>Merk Beras</label>
-            <input type="text" name="merk" class="form-control" placeholder="Contoh: Cap X" required>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-4 mb-3">
-            <label>Jumlah Keluar (kg)</label>
-            <input type="number" name="jumlah" class="form-control" min="1" value="1" required>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <label>Harga Jual (Rp)</label>
-            <input type="number" name="harga_jual" class="form-control" min="0" required>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <label>Alasan Keluar</label>
-            <select name="alasan" class="form-select" required>
-                <option value="">-- Pilih Alasan --</option>
-                <option value="penjualan">Penjualan</option>
-                <option value="retur">Retur</option>
-                <option value="sampel">Sampel</option>
-                <option value="lainnya">Lainnya</option>
-            </select>
-        </div>
-    </div>
-
-    <!-- Jika ingin alasan panjang, bisa gunakan textarea (opsional) -->
-    <div class="mb-3">
-        <label>Keterangan (opsional)</label>
-        <textarea name="keterangan" class="form-control" rows="2" placeholder="Detail tambahan (mis. nama pembeli, nota...)"></textarea>
-    </div>
-
-    <button type="submit" class="btn btn-success">Simpan</button>
-</form>
+<!-- TAMPILKAN SEMUA MODAL -->
+<?php
+foreach ($modal_list as $modal) {
+    echo $modal;
+}
+?>
 
 <?php include '../includes/footer.php'; ?>

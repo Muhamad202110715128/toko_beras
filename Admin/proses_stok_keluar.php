@@ -1,72 +1,57 @@
 <?php
-// jangan include header di file proses agar header() bisa berjalan
 include '../includes/config.php';
 
-$tanggal = $_POST['tanggal'] ?? date('Y-m-d');
-$jenis = $_POST['jenis_beras'] ?? '';
-$merk = $_POST['merk'] ?? null;
-$alasan = $_POST['alasan'] ?? '';
-$jumlah_keluar = isset($_POST['jumlah']) && is_numeric($_POST['jumlah']) ? (int)$_POST['jumlah'] : 1;
-
-if (trim($jenis) === '' || $jumlah_keluar <= 0) {
-    header("Location: stok_keluar.php?error=invalid_input");
-    exit;
+if (!isset($_POST['id_stok']) || !isset($_POST['jumlah_keluar']) || !isset($_POST['deskripsi'])) {
+    die("<script>alert('Form tidak lengkap!'); window.location='input_stok_keluar.php';</script>");
 }
 
-try {
-    $koneksi->begin_transaction();
+$id_stok = intval($_POST['id_stok']);
+$jumlah_keluar = intval($_POST['jumlah_keluar']);
+$deskripsi = $koneksi->real_escape_string($_POST['deskripsi']);
+$tanggal = date("Y-m-d");
 
-    // tipe parameter: tanggal(s), jenis(s), merk(s), jumlah(i), alasan(s) -> 'sssis'
-    $ins = $koneksi->prepare("INSERT INTO stok_keluar (tanggal, jenis_beras, merk, jumlah, alasan) VALUES (?, ?, ?, ?, ?)");
-    $ins->bind_param('sssis', $tanggal, $jenis, $merk, $jumlah_keluar, $alasan);
-    $ins->execute();
-    $ins->close();
+// Ambil data stok masuk berdasarkan ID
+$q = $koneksi->query("SELECT * FROM stok_masuk WHERE id = '$id_stok'");
 
-    if ($merk) {
-        $sel = $koneksi->prepare("SELECT id, jumlah FROM stok_masuk WHERE jenis_beras = ? AND merk = ? AND jumlah > 0 ORDER BY tanggal_kadaluarsa ASC, tanggal ASC FOR UPDATE");
-        $sel->bind_param('ss', $jenis, $merk);
-    } else {
-        $sel = $koneksi->prepare("SELECT id, jumlah FROM stok_masuk WHERE jenis_beras = ? AND jumlah > 0 ORDER BY tanggal_kadaluarsa ASC, tanggal ASC FOR UPDATE");
-        $sel->bind_param('s', $jenis);
-    }
-    $sel->execute();
-    $res = $sel->get_result();
-
-    $sisa = $jumlah_keluar;
-    $update = $koneksi->prepare("UPDATE stok_masuk SET jumlah = ? WHERE id = ?");
-
-    while ($row = $res->fetch_assoc()) {
-        if ($sisa <= 0) break;
-        $id = (int)$row['id'];
-        $stok_tersedia = (int)$row['jumlah'];
-
-        if ($stok_tersedia <= $sisa) {
-            $zero = 0;
-            $update->bind_param('ii', $zero, $id);
-            $update->execute();
-            $sisa -= $stok_tersedia;
-        } else {
-            $baru = $stok_tersedia - $sisa;
-            $update->bind_param('ii', $baru, $id);
-            $update->execute();
-            $sisa = 0;
-        }
-    }
-
-    $update->close();
-    $sel->close();
-
-    if ($sisa > 0) {
-        $koneksi->rollback();
-        header("Location: stok_keluar.php?error=insufficient_stock&need=" . $sisa);
-        exit;
-    }
-
-    $koneksi->commit();
-    header("Location: stok_keluar.php?success=1");
-    exit;
-} catch (Exception $e) {
-    if ($koneksi->errno) $koneksi->rollback();
-    header("Location: stok_keluar.php?error=server_error");
-    exit;
+if ($q->num_rows == 0) {
+    die("<script>alert('Data stok tidak ditemukan!'); window.location='input_stok_keluar.php';</script>");
 }
+
+$data = $q->fetch_assoc();
+
+$stok_sisa = $data['jumlah'];
+$jenis = $data['jenis_beras'];
+$merk = $data['merk'];
+$tanggal_kadaluarsa = $data['tanggal_kadaluarsa'];
+$harga_beli = $data['harga_beli'];
+
+// Validasi stok cukup
+if ($jumlah_keluar > $stok_sisa) {
+    die("<script>alert('Stok tidak cukup! Sisa stok: $stok_sisa kg'); window.location='input_stok_keluar.php';</script>");
+}
+
+// Hitung stok baru
+$stok_baru = $stok_sisa - $jumlah_keluar;
+
+// Update stok sisa
+$koneksi->query("
+    UPDATE stok_masuk 
+    SET jumlah = '$stok_baru' 
+    WHERE id = '$id_stok'
+");
+
+// Insert lengkap ke stok_keluar
+$koneksi->query("
+    INSERT INTO stok_keluar (tanggal, jenis_beras, merk, jumlah, tanggal_kadaluarsa, harga_jual, alasan)
+    VALUES (
+        '$tanggal',
+        '$jenis',
+        '$merk',
+        '$jumlah_keluar',
+        '$tanggal_kadaluarsa',
+        '$harga_beli',
+        '$deskripsi'
+    )
+");
+
+echo "<script>alert('Stok berhasil dikeluarkan!'); window.location='stok_keluar.php';</script>";

@@ -69,28 +69,65 @@ include '../includes/header.php';
                 </thead>
                 <tbody>
                     <?php
+                    $q = $koneksi->query("
+                        SELECT 
+                            id,
+                            tanggal,
+                            tanggal_kadaluarsa,
+                            jenis_beras,
+                            merk,
+                            jumlah,
+                            harga_jual,
+                            alasan
+                        FROM stok_keluar
+                        ORDER BY tanggal DESC
+                    ");
+
                     if ($q && $q->num_rows > 0) {
                         $no = 1;
+
                         while ($row = $q->fetch_assoc()) {
-                            $id = (int)$row['id'];
-                            $tgl = htmlspecialchars($row['tanggal'] ?? '-');
-                            $tk = htmlspecialchars($row['tanggal_kadaluarsa'] ?? '-');
-                            $jenis = htmlspecialchars($row['jenis_beras'] ?? '-');
-                            $merk = $row['merk'] !== '' ? htmlspecialchars($row['merk']) : '-';
-                            $jumlah = (int)($row['jumlah'] ?? 0);
-                            $harga = number_format((float)($row['harga_jual'] ?? 0), 0, ',', '.');
-                            echo "<tr>
-                <td class='text-center'>{$no}</td>
-                <td>{$tgl}</td>
-                <td class='text-center'>{$tk}</td>
-                <td>{$jenis}</td>
-                <td class='text-center'>{$merk}</td>
-                <td class='text-end'>{$jumlah}</td>
-                <td class='text-end'>Rp {$harga}</td>
-                <td class='text-center'>
-                  <button class='btn btn-info btn-sm btn-detail' data-id='{$id}'>Detail</button>
-                </td>
-              </tr>";
+
+                            $id = $row['id'];
+                            $tgl = $row['tanggal'] ?: '-';
+                            $tk = $row['tanggal_kadaluarsa'] ?: '-';
+                            $jenis = $row['jenis_beras'] ?: '-';
+                            $merk = $row['merk'] ?: '-';
+                            $jumlah = $row['jumlah'] ?: 0;
+
+                            $harga = number_format($row['harga_jual'], 0, ',', '.');
+                            $alasan = $row['alasan'] ?: '-';
+
+                            echo "
+        <tr>
+            <td class='text-center'>{$no}</td>
+            <td>{$tgl}</td>
+            <td class='text-center'>{$tk}</td>
+            <td>{$jenis}</td>
+            <td class='text-center'>{$merk}</td>
+            <td class='text-end'>{$jumlah}</td>
+            <td class='text-end'>Rp {$harga}</td>
+
+            <td class='text-center'>
+                <button 
+                    class='btn btn-info btn-sm btn-detail'
+                    data-bs-toggle='modal'
+                    data-bs-target='#detailModal'
+
+                    data-tanggal='{$tgl}'
+                    data-tanggal_kadaluarsa='{$tk}'
+                    data-jenis='{$jenis}'
+                    data-merk='{$merk}'
+                    data-jumlah='{$jumlah}'
+                    data-harga='Rp {$harga}'
+                    data-alasan='{$alasan}'
+                >
+                    Detail
+                </button>
+            </td>
+        </tr>
+        ";
+
                             $no++;
                         }
                     } else {
@@ -98,6 +135,7 @@ include '../includes/header.php';
                     }
                     ?>
                 </tbody>
+
             </table>
         </div>
     </div>
@@ -153,34 +191,24 @@ include '../includes/header.php';
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const detailButtons = document.querySelectorAll('.btn-detail');
-        const modalEl = document.getElementById('detailModal');
-        const modal = new bootstrap.Modal(modalEl);
+    document.addEventListener("DOMContentLoaded", function() {
 
-        detailButtons.forEach(btn => {
-            btn.addEventListener('click', function() {
-                // ambil data dari atribut
-                const dTanggal = this.dataset.tanggal || '-';
-                const dKadaluarsa = this.dataset.tanggalKadaluarsa || '-';
-                const dJenis = this.dataset.jenis || '-';
-                const dMerk = this.dataset.merk || '-';
-                const dJumlah = this.dataset.jumlah || '-';
-                const dHarga = this.dataset.harga || '-';
-                const dAlasan = this.dataset.alasan || '-';
+        const buttons = document.querySelectorAll(".btn-detail");
 
-                // isi modal
-                document.getElementById('d-tanggal').textContent = dTanggal;
-                document.getElementById('d-tanggal-kadaluarsa').textContent = dKadaluarsa;
-                document.getElementById('d-jenis').textContent = dJenis;
-                document.getElementById('d-merk').textContent = dMerk;
-                document.getElementById('d-jumlah').textContent = dJumlah + ' kg';
-                document.getElementById('d-harga').textContent = dHarga;
-                document.getElementById('d-alasan').textContent = dAlasan;
+        buttons.forEach(btn => {
+            btn.addEventListener("click", function() {
 
-                modal.show();
+                document.getElementById("d-tanggal").textContent = this.dataset.tanggal;
+                document.getElementById("d-tanggal-kadaluarsa").textContent = this.dataset.tanggal_kadaluarsa;
+                document.getElementById("d-jenis").textContent = this.dataset.jenis;
+                document.getElementById("d-merk").textContent = this.dataset.merk;
+                document.getElementById("d-jumlah").textContent = this.dataset.jumlah + " kg";
+                document.getElementById("d-harga").textContent = this.dataset.harga;
+                document.getElementById("d-alasan").textContent = this.dataset.alasan;
+
             });
         });
+
     });
 </script>
 
