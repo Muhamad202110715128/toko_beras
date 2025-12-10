@@ -1,13 +1,14 @@
 <?php
 include '../includes/config.php';
 
-if (!isset($_POST['id_stok']) || !isset($_POST['jumlah_keluar']) || !isset($_POST['deskripsi'])) {
+// Cek kelengkapan input (Deskripsi diganti harga_jual)
+if (!isset($_POST['id_stok']) || !isset($_POST['jumlah_keluar']) || !isset($_POST['harga_jual'])) {
     die("<script>alert('Form tidak lengkap!'); window.location='input_stok_keluar.php';</script>");
 }
 
 $id_stok = intval($_POST['id_stok']);
 $jumlah_keluar = intval($_POST['jumlah_keluar']);
-$deskripsi = $koneksi->real_escape_string($_POST['deskripsi']);
+$harga_jual_input = intval($_POST['harga_jual']); // Ambil harga jual dari input
 $tanggal = date("Y-m-d");
 
 // Ambil data stok masuk berdasarkan ID
@@ -23,24 +24,24 @@ $stok_sisa = $data['jumlah'];
 $jenis = $data['jenis_beras'];
 $merk = $data['merk'];
 $tanggal_kadaluarsa = $data['tanggal_kadaluarsa'];
-$harga_beli = $data['harga_beli'];
 
 // Validasi stok cukup
 if ($jumlah_keluar > $stok_sisa) {
     die("<script>alert('Stok tidak cukup! Sisa stok: $stok_sisa kg'); window.location='input_stok_keluar.php';</script>");
 }
 
-// Hitung stok baru
+// Hitung stok baru di tabel stok_masuk
 $stok_baru = $stok_sisa - $jumlah_keluar;
 
-// Update stok sisa
+// Update stok sisa di tabel stok_masuk
 $koneksi->query("
     UPDATE stok_masuk 
     SET jumlah = '$stok_baru' 
     WHERE id = '$id_stok'
 ");
 
-// Insert lengkap ke stok_keluar
+// Insert ke tabel stok_keluar
+// Kolom alasan diisi '-' karena form deskripsi dihapus
 $koneksi->query("
     INSERT INTO stok_keluar (tanggal, jenis_beras, merk, jumlah, tanggal_kadaluarsa, harga_jual, alasan)
     VALUES (
@@ -49,8 +50,8 @@ $koneksi->query("
         '$merk',
         '$jumlah_keluar',
         '$tanggal_kadaluarsa',
-        '$harga_beli',
-        '$deskripsi'
+        '$harga_jual_input', 
+        '-' 
     )
 ");
 

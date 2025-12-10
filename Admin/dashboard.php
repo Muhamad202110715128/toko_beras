@@ -28,7 +28,7 @@ $stokTersedia = $stokMasuk - $stokKeluar;
 
 <body>
     <!-- side bar -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu">
         <div class="offcanvas-header">
             <div class="d-flex align-items-center">
                 <div class="user-avatar me-2" style="background: <?= htmlspecialchars($avatarBg) ?>;">
@@ -39,16 +39,17 @@ $stokTersedia = $stokMasuk - $stokKeluar;
                     <small class="text-muted"><?= htmlspecialchars($roleLabel) ?></small>
                 </div>
             </div>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush">
-                <a href="/toko_beras/Admin/dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
-                <a href="/toko_beras/Admin/stok_masuk.php" class="list-group-item list-group-item-action">Stok Masuk</a>
-                <a href="/toko_beras/admin/stok_keluar.php" class="list-group-item list-group-item-action">Stok Keluar</a>
-                <a href="/toko_beras/admin/low_stock.php" class="list-group-item list-group-item-action">Low Stock</a>
+                <a href="dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
+                <a href="gudang.php" class="list-group-item list-group-item-action active">Stok Gudang</a>
+                <a href="stok_masuk.php" class="list-group-item list-group-item-action">Input Stok Masuk</a>
+                <a href="stok_keluar.php" class="list-group-item list-group-item-action">Stok Keluar</a>
+                <a href="low_stock.php" class="list-group-item list-group-item-action">Low Stock</a>
                 <div class="list-group-item">
-                    <a href="/toko_beras/logout.php" class="btn btn-outline-danger w-100">Logout</a>
+                    <a href="../logout.php" class="btn btn-outline-danger w-100">Logout</a>
                 </div>
             </div>
         </div>

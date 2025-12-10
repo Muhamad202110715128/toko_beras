@@ -31,6 +31,7 @@ if (!empty($where)) {
     $sql .= " WHERE " . implode(" AND ", $where);
 }
 
+// Urutkan stok masuk (FIFO: First In First Out sebaiknya berdasarkan tanggal masuk asc, tapi sesuai request Anda desc)
 $sql .= " ORDER BY tanggal DESC, tanggal_kadaluarsa ASC";
 
 $q = $koneksi->query($sql);
@@ -144,14 +145,14 @@ $modal_list = [];
                                 </tr>
                                 ";
 
-                                // SIMPAN MODAL DALAM ARRAY
+                                // --- PERUBAHAN DI SINI (MODAL) ---
                                 $modal_list[] = "
                                 <div class='modal fade' id='modalKeluar_$id' tabindex='-1'>
                                     <div class='modal-dialog'>
                                         <form action='proses_stok_keluar.php' method='POST' class='modal-content'>
 
                                             <div class='modal-header'>
-                                                <h5 class='modal-title'>Stok Keluar — $jenis ($merk)</h5>
+                                                <h5 class='modal-title'>Stok Keluar — $jenis</h5>
                                                 <button type='button' class='btn-close' data-bs-dismiss='modal'></button>
                                             </div>
 
@@ -167,22 +168,28 @@ $modal_list = [];
                                                            min='1' 
                                                            max='$jumlah'
                                                            required>
-                                                    <small class='text-muted'>Sisa stok: $jumlah kg</small>
+                                                    <small class='text-muted'>Sisa stok tersedia: <b>$jumlah kg</b></small>
                                                 </div>
 
+                                                <!-- Bagian Deskripsi diganti Harga Jual -->
                                                 <div class='mb-3'>
-                                                    <label class='form-label'>Deskripsi</label>
-                                                    <textarea name='deskripsi' 
-                                                              class='form-control' 
-                                                              rows='2'
-                                                              required></textarea>
+                                                    <label class='form-label fw-bold'>Harga Jual (Rp)</label>
+                                                    <div class='input-group'>
+                                                        <span class='input-group-text'>Rp</span>
+                                                        <input type='number' 
+                                                               name='harga_jual' 
+                                                               class='form-control' 
+                                                               placeholder='Masukkan harga jual...'
+                                                               required>
+                                                    </div>
+                                                    <small class='text-muted'>Harga Beli: Rp $harga</small>
                                                 </div>
 
                                             </div>
 
                                             <div class='modal-footer'>
                                                 <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Batal</button>
-                                                <button type='submit' class='btn btn-success'>Keluarkan</button>
+                                                <button type='submit' class='btn btn-success'>Simpan & Keluarkan</button>
                                             </div>
 
                                         </form>

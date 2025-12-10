@@ -78,7 +78,7 @@ $total_items = $total_items_data['total_item'] ?? 0;
                 </a>
             </div>
             <div class="col-md-3">
-                <a href="orders.php" class="text-decoration-none">
+                <a href="order.php" class="text-decoration-none">
                     <div class="summary-card">
                         <h6>New Orders</h6>
                         <h4><?= $new_orders; ?></h4>
