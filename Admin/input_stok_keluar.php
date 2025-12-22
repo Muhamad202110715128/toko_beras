@@ -46,6 +46,33 @@ $modal_list = [];
         font-weight: 700;
     }
 </style>
+<!-- SIDEBAR -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu">
+    <div class="offcanvas-header">
+        <div class="d-flex align-items-center">
+            <div class="user-avatar me-2" style="background: <?= htmlspecialchars($avatarBg) ?>;">
+                <?= $icon ?>
+            </div>
+            <div>
+                <div class="fw-bold"><?= htmlspecialchars($username ?: $roleLabel) ?></div>
+                <small class="text-muted"><?= htmlspecialchars($roleLabel) ?></small>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <div class="list-group list-group-flush">
+            <a href="dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
+            <a href="stok_masuk.php" class="list-group-item list-group-item-action ">Stok Gudang</a>
+            <a href="stok_keluar.php" class="list-group-item list-group-item-action active">Stok Keluar</a>
+            <a href="low_stock.php" class="list-group-item list-group-item-action">Low Stock</a>
+            <div class="list-group-item">
+                <a href="../logout.php" class="btn btn-outline-danger w-100">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="container mt-4">
 

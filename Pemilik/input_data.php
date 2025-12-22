@@ -67,6 +67,7 @@ $merk_beras  = $koneksi->query("SELECT * FROM merk_beras ORDER BY id_merk DESC")
     <div class="offcanvas-body p-0">
         <div class="list-group list-group-flush">
             <!-- Sesuaikan link 'laporan.php' dengan nama file laporan Anda yang benar -->
+            <a href="dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
             <a href="laporan.php" class="list-group-item list-group-item-action">Laporan Eksekutif</a>
             <a href="input_data.php" class="list-group-item list-group-item-action active">Kelola Data Master</a>
             <div class="list-group-item">

@@ -43,9 +43,8 @@ $stokTersedia = $stokMasuk - $stokKeluar;
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush">
-                <a href="dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
-                <a href="gudang.php" class="list-group-item list-group-item-action active">Stok Gudang</a>
-                <a href="stok_masuk.php" class="list-group-item list-group-item-action">Input Stok Masuk</a>
+                <a href="dashboard.php" class="list-group-item list-group-item-action active">Dashboard</a>
+                <a href="stok_masuk.php" class="list-group-item list-group-item-action ">Stok Gudang</a>
                 <a href="stok_keluar.php" class="list-group-item list-group-item-action">Stok Keluar</a>
                 <a href="low_stock.php" class="list-group-item list-group-item-action">Low Stock</a>
                 <div class="list-group-item">

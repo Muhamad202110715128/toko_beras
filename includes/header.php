@@ -20,9 +20,9 @@ if ($role === 'admin') {
 } elseif ($role === 'kasir') {
   $avatarBg = '#15d736ff';
   $roleLabel = 'Kasir';
-} elseif ($role === 'pemilik' || $role === 'owner') {
+} elseif ($role === 'pemilik') {
   $avatarBg = '#15d736ff';
-  $roleLabel = 'Owner';
+  $roleLabel = 'Pemilik';
 }
 
 // 3. AUTO CHECK TRIGGER (jalankan sekali per request)
@@ -34,6 +34,7 @@ if (isset($koneksi) && !defined('NOTIF_CHECK_DONE')) {
 // 4. AMBIL DATA NOTIFIKASI
 $jumlah_notif = 0;
 $list_notif = null;
+$notif_rows = [];
 
 if ($role && isset($koneksi)) {
   // gunakan role asli; fungsi notifikasi akan menormalisasi ('owner' <-> 'pemilik')
@@ -41,6 +42,15 @@ if ($role && isset($koneksi)) {
   $list_notif = ambilNotifikasi($koneksi, $role_db);
   // hitung unread (fungsi menangani normalisasi)
   $jumlah_notif = hitungNotifikasiBelumDibaca($koneksi, $role_db);
+
+  // Proses hasil query menjadi array
+  if ($list_notif && is_object($list_notif) && method_exists($list_notif, 'fetch_assoc')) {
+    while ($r = $list_notif->fetch_assoc()) {
+      $notif_rows[] = $r;
+    }
+  } elseif (is_array($list_notif)) {
+    $notif_rows = $list_notif;
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -54,107 +64,10 @@ if ($role && isset($koneksi)) {
   <!-- Bootstrap 5 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../style.css">
 
   <style>
-    /* Styling User Avatar */
-    .user-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-size: 20px;
-      font-weight: 600;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-    }
 
-    .user-info {
-      display: inline-block;
-      vertical-align: middle;
-      margin-left: .6rem;
-      text-align: left;
-    }
-
-    .user-info .name {
-      font-weight: 600;
-      font-size: .95rem;
-      color: #fff;
-    }
-
-    .user-info .role {
-      font-size: .75rem;
-      opacity: .9;
-      color: #f8f9fa;
-      margin-top: -2px;
-      display: block;
-    }
-
-    .btn-hamburger {
-      filter: brightness(1.2);
-      padding: .35rem .5rem;
-      border-radius: .375rem;
-      color: #fff;
-      background: rgba(255, 255, 255, 0.06);
-      border: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .btn-hamburger:hover {
-      filter: brightness(1.35);
-      background: rgba(255, 255, 255, 0.09);
-    }
-
-    .btn-hamburger .bars {
-      font-size: 20px;
-      line-height: 1;
-      color: #fff;
-    }
-
-    /* Styling Notifikasi */
-    .notification-wrapper {
-      position: relative;
-      cursor: pointer;
-      text-decoration: none;
-    }
-
-    .notification-badge {
-      position: absolute;
-      top: -8px;
-      right: -8px;
-      padding: 3px 6px;
-      border-radius: 50%;
-      font-size: 10px;
-      min-width: 18px;
-      text-align: center;
-    }
-
-    .notif-item {
-      white-space: normal;
-      border-bottom: 1px solid #f0f0f0;
-      padding: 10px 15px;
-      transition: background 0.2s;
-    }
-
-    .notif-item:hover {
-      background-color: #f1f1f1;
-    }
-
-    .notif-unread {
-      background-color: #e3f2fd;
-      font-weight: 500;
-    }
-
-    .dropdown-menu-notif {
-      max-height: 350px;
-      overflow-y: auto;
-      width: 320px;
-      z-index: 9999;
-    }
   </style>
 </head>
 
@@ -172,61 +85,48 @@ if ($role && isset($koneksi)) {
 
         <!-- A. NOTIFIKASI -->
         <?php if ($role): ?>
-
-          <?php
-          // Normalisasi output $list_notif agar kompatibel baik mysqli_result maupun array
-          $notif_rows = [];
-          $notif_count = 0;
-          if ($list_notif) {
-            if (is_object($list_notif) && method_exists($list_notif, 'fetch_assoc')) {
-              // mysqli_result
-              while ($r = $list_notif->fetch_assoc()) $notif_rows[] = $r;
-              $notif_count = count($notif_rows);
-            } elseif (is_array($list_notif)) {
-              $notif_rows = $list_notif;
-              $notif_count = count($notif_rows);
-            }
-          }
-          ?>
-
-          <div class="dropdown me-3">
-            <a class="text-white notification-wrapper" href="#" role="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-bell-fill" style="font-size: 1.3rem;"></i>
-              <?php if ($jumlah_notif > 0): ?>
-                <span class="badge bg-danger notification-badge"><?= $jumlah_notif ?></span>
+          <div class="dropdown dropstart me-3 position-relative">
+            <a class="text-white notification-wrapper" href="#" role="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
+              <i class="bi bi-bell-fill" style="font-size: 1.25rem; position:relative;"></i>
+              <?php if (!empty($jumlah_notif) && $jumlah_notif > 0): ?>
+                <span class="badge bg-danger notification-badge"><?= (int)$jumlah_notif ?></span>
               <?php endif; ?>
             </a>
 
-            <ul class="dropdown-menu dropdown-menu-end shadow dropdown-menu-notif" aria-labelledby="notifDropdown">
-              <li>
-                <h6 class="dropdown-header fw-bold text-uppercase">Notifikasi <?= $roleLabel ?></h6>
-              </li>
-              <li>
-                <hr class="dropdown-divider my-0">
-              </li>
+            <div class="dropdown-menu shadow dropdown-menu-notif" aria-labelledby="notifDropdown" data-bs-popper="static">
+              <div class="notif-header">Notifikasi <?= htmlspecialchars($roleLabel ?? ucfirst($role ?? '')) ?></div>
 
-              <?php if ($notif_count > 0): ?>
-                <?php foreach ($notif_rows as $n): ?>
-                  <li>
-                    <a class="dropdown-item notif-item <?= ($n['status'] ?? '') == 'unread' ? 'notif-unread' : '' ?>"
-                      href="/toko_beras/includes/baca_notifikasi.php?id=<?= htmlspecialchars($n['id']) ?>&redirect=<?= urlencode($n['link'] ?? '#') ?>">
-                      <div class="d-flex justify-content-between mb-1">
-                        <strong class="text-primary small"><?= htmlspecialchars($n['judul'] ?? '') ?></strong>
-                        <span class="text-muted" style="font-size:0.65rem;"><?= !empty($n['created_at']) ? date('d/m H:i', strtotime($n['created_at'])) : '' ?></span>
+              <div class="notif-list">
+                <?php if (!empty($notif_rows)): ?>
+                  <?php foreach ($notif_rows as $n): ?>
+                    <?php
+                    $id = (int)($n['id'] ?? 0);
+                    $judul = htmlspecialchars($n['judul'] ?? '');
+                    $pesan = htmlspecialchars($n['pesan'] ?? '');
+                    $link = htmlspecialchars($n['link'] ?? '#');
+                    $created = !empty($n['created_at']) ? date('d/m H:i', strtotime($n['created_at'])) : '';
+                    $isUnread = (($n['status'] ?? '') === 'unread');
+                    ?>
+                    <a class="notif-item <?= $isUnread ? 'notif-unread' : '' ?>" href="/toko_beras/includes/baca_notifikasi.php?id=<?= $id ?>&redirect=<?= urlencode($link) ?>">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <div class="notif-title"><?= $judul ?></div>
+                        <div class="notif-time"><?= $created ?></div>
                       </div>
-                      <div class="text-secondary small" style="line-height:1.3;">
-                        <?= htmlspecialchars($n['pesan'] ?? '') ?>
-                      </div>
+                      <div class="notif-msg"><?= $pesan ?></div>
                     </a>
-                  </li>
-                <?php endforeach; ?>
-              <?php else: ?>
-                <li class="text-center py-4 text-muted small">
-                  <i class="bi bi-bell-slash d-block mb-2" style="font-size: 1.5rem;"></i>
-                  Tidak ada notifikasi baru
-                </li>
-              <?php endif; ?>
-            </ul>
+                  <?php endforeach; ?>
+                <?php else: ?>
+                  <div class="text-center py-4 text-muted small">
+                    <i class="bi bi-bell-slash" style="font-size:1.4rem; display:block; margin-bottom:.5rem;"></i>
+                    Tidak ada notifikasi baru
+                  </div>
+                <?php endif; ?>
+              </div>
+
+              <div class="footer">
+                <a href="/toko_beras/Admin/notifikasi_all.php" class="small text-decoration-none">Lihat semua notifikasi</a>
+              </div>
+            </div>
           </div>
         <?php endif; ?>
 
@@ -255,4 +155,72 @@ if ($role && isset($koneksi)) {
 
   <!-- SCRIPT BOOTSTRAP (Wajib ada) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Notifikasi: sinkronisasi Bootstrap API + fallback ringan (tidak mengganggu admin/kasir) -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var btn = document.getElementById('notifDropdown');
+      if (!btn) return;
+      var root = btn.closest('.dropdown');
+      var menu = root ? root.querySelector('.dropdown-menu') : null;
+      var dd = null;
+
+      try {
+        dd = bootstrap.Dropdown.getOrCreateInstance(btn);
+      } catch (err) {
+        dd = null;
+      }
+
+      // Pastikan aria-expanded sinkron saat Bootstrap memicu event
+      btn.addEventListener('shown.bs.dropdown', function() {
+        btn.setAttribute('aria-expanded', 'true');
+      });
+      btn.addEventListener('hidden.bs.dropdown', function() {
+        btn.setAttribute('aria-expanded', 'false');
+      });
+
+      // Setelah klik, jika Bootstrap gagal membuka dropdown, buka via API/fallback (tanpa preventDefault)
+      btn.addEventListener('click', function() {
+        setTimeout(function() {
+          var expanded = btn.getAttribute('aria-expanded') === 'true';
+          var visible = menu && menu.classList.contains('show');
+
+          if (!expanded && !visible) {
+            if (dd && typeof dd.show === 'function') {
+              try {
+                dd.show();
+              } catch (e) {
+                /* ignore */
+              }
+            } else if (menu) {
+              menu.classList.add('show');
+              btn.classList.add('show');
+              btn.setAttribute('aria-expanded', 'true');
+            }
+          }
+        }, 12);
+      });
+
+      // Tutup saat klik di luar (gunakan API jika ada)
+      document.addEventListener('click', function(ev) {
+        if (!root || root.contains(ev.target)) return;
+        if (menu && menu.classList.contains('show')) {
+          if (dd && typeof dd.hide === 'function') {
+            try {
+              dd.hide();
+            } catch (e) {
+              /* ignore */
+            }
+          } else {
+            menu.classList.remove('show');
+            btn.classList.remove('show');
+            btn.setAttribute('aria-expanded', 'false');
+          }
+        }
+      });
+    });
+  </script>
+
 </body>
+
+</html>

@@ -3,11 +3,12 @@
 include '../includes/config.php';
 include '../includes/header.php';
 
-// Cek akses (Hanya Owner)
-if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'owner' && $_SESSION['role'] !== 'pemilik')) {
+// Cek akses (HANYA PEMILIK)
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'pemilik') {
     echo "<script>window.location='../login.php';</script>";
     exit;
 }
+
 
 // ==========================================
 // 1. FILTER TANGGAL (Default: Bulan Ini)
@@ -107,6 +108,32 @@ $total_expired = $q_exp->fetch_assoc()['jumlah_batch'] ?? 0;
 
 <div class="container mt-4">
 
+    <!-- SIDEBAR OWNER (Agar bisa navigasi) -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu">
+        <div class="offcanvas-header">
+            <div class="d-flex align-items-center">
+                <div class="user-avatar me-2" style="background: <?= htmlspecialchars($avatarBg) ?>;">
+                    <?= $icon ?>
+                </div>
+                <div>
+                    <div class="fw-bold"><?= htmlspecialchars($username ?: $roleLabel) ?></div>
+                    <small class="text-muted"><?= htmlspecialchars($roleLabel) ?></small>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="list-group list-group-flush">
+                <!-- Sesuaikan link 'laporan.php' dengan nama file laporan Anda yang benar -->
+                <a href="dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
+                <a href="laporan.php" class="list-group-item list-group-item-action active">Laporan Eksekutif</a>
+                <a href="input_data.php" class="list-group-item list-group-item-action">Kelola Data Master</a>
+                <div class="list-group-item">
+                    <a href="../logout.php" class="btn btn-outline-danger w-100">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- HEADER & FILTER -->
     <div class="d-flex justify-content-between align-items-center mb-4 no-print">
         <div>
@@ -313,7 +340,7 @@ $total_expired = $q_exp->fetch_assoc()['jumlah_batch'] ?? 0;
                 <!-- PERUBAHAN DI SINI: D-FLEX UNTUK JUDUL DAN TOMBOL -->
                 <div class="card-header bg-danger text-white py-2 d-flex justify-content-between align-items-center">
                     <h6 class="m-0 fw-bold"><i class="bi bi-exclamation-triangle"></i> Stok Kritis</h6>
-                    <a href="detail_low_stock.php" class="btn btn-sm btn-light text-danger py-0" style="font-size: 0.8rem;">Detail</a>
+                    <a href="detail_low_stok.php" class="btn btn-sm btn-light text-danger py-0" style="font-size: 0.8rem;">Detail</a>
                 </div>
                 <ul class="list-group list-group-flush">
                     <?php

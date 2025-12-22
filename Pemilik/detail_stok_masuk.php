@@ -10,20 +10,38 @@ $tgl_awal  = $_GET['tgl_awal'] ?? date('Y-m-01');
 $tgl_akhir = $_GET['tgl_akhir'] ?? date('Y-m-d');
 ?>
 
-<style>
-    @media print {
+<link rel="stylesheet" href="detail.css">
 
-        .no-print,
-        .offcanvas,
-        .btn {
-            display: none !important;
-        }
-    }
-</style>
+<!-- SIDEBAR OWNER (Agar bisa navigasi) -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu">
+    <div class="offcanvas-header">
+        <div class="d-flex align-items-center">
+            <div class="user-avatar me-2" style="background: <?= htmlspecialchars($avatarBg) ?>;">
+                <?= $icon ?>
+            </div>
+            <div>
+                <div class="fw-bold"><?= htmlspecialchars($username ?: $roleLabel) ?></div>
+                <small class="text-muted"><?= htmlspecialchars($roleLabel) ?></small>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <div class="list-group list-group-flush">
+            <!-- Sesuaikan link 'laporan.php' dengan nama file laporan Anda yang benar -->
+            <a href="dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
+            <a href="laporan.php" class="list-group-item list-group-item-action active">Laporan Eksekutif</a>
+            <a href="input_data.php" class="list-group-item list-group-item-action">Kelola Data Master</a>
+            <div class="list-group-item">
+                <a href="../logout.php" class="btn btn-outline-danger w-100">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3 no-print">
-        <a href="laporan_owner.php?tgl_awal=<?= $tgl_awal ?>&tgl_akhir=<?= $tgl_akhir ?>" class="btn btn-outline-secondary">
+        <a href="laporan.php?tgl_awal=<?= $tgl_awal ?>&tgl_akhir=<?= $tgl_akhir ?>" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left"></i> Kembali
         </a>
         <button onclick="window.print()" class="btn btn-danger"><i class="bi bi-printer"></i> Cetak</button>

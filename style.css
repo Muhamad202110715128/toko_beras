@@ -14,3 +14,159 @@
       background: transparent;
       border: none;
     }
+/* Styling User Avatar */
+    .user-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+
+    .user-info {
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: .6rem;
+      text-align: left;
+    }
+
+    .user-info .name {
+      font-weight: 600;
+      font-size: .95rem;
+      color: #fff;
+    }
+
+    .user-info .role {
+      font-size: .75rem;
+      opacity: .9;
+      color: #f8f9fa;
+      margin-top: -2px;
+      display: block;
+    }
+
+    .btn-hamburger {
+      filter: brightness(1.2);
+      padding: .35rem .5rem;
+      border-radius: .375rem;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-hamburger:hover {
+      filter: brightness(1.35);
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .btn-hamburger .bars {
+      font-size: 20px;
+      line-height: 1;
+      color: #fff;
+    }
+
+    /* Styling Notifikasi */
+    .notification-wrapper {
+      position: relative;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      padding: 3px 6px;
+      border-radius: 50%;
+      font-size: 10px;
+      min-width: 18px;
+      text-align: center;
+    }
+
+    .notif-item {
+      white-space: normal;
+      border-bottom: 1px solid #f0f0f0;
+      padding: 10px 15px;
+      transition: background 0.2s;
+    }
+
+    .notif-item:hover {
+      background-color: #f1f1f1;
+    }
+
+    .notif-unread {
+      background-color: #e3f2fd;
+      font-weight: 500;
+    }
+
+    .dropdown-menu-notif {
+      width: 360px;
+      max-width: 92vw;
+      padding: 0;
+      border-radius: .35rem;
+      overflow: hidden;
+    }
+
+    .notif-header {
+      background: #f8f9fa;
+      padding: .75rem 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: .85rem;
+    }
+
+    .notif-list {
+      max-height: 320px;
+      overflow-y: auto;
+      background: #fff;
+    }
+
+    .notif-item {
+      display: block;
+      padding: .75rem 1rem;
+      border-bottom: 1px solid #f1f1f1;
+      text-decoration: none;
+    }
+
+    .notif-item:hover {
+      background: #f7fbff;
+      text-decoration: none;
+    }
+
+    .notif-title {
+      color: #0d6efd;
+      font-weight: 700;
+      font-size: .95rem;
+    }
+
+    .notif-time {
+      font-size: .72rem;
+      color: #6c757d;
+      margin-left: .5rem;
+    }
+
+    .notif-msg {
+      color: #6c757d;
+      font-size: .85rem;
+      margin-top: .25rem;
+      line-height: 1.25;
+    }
+
+    .notif-unread {
+      background: #fffbe6;
+    }
+
+    /* highlight ringan untuk unread */
+
+    /* Pastikan dropdown notifikasi membuka ke kiri */
+    .dropstart .dropdown-menu-notif {
+      right: 100%;
+      left: auto;
+    }

@@ -7,10 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 // Pastikan hanya pemilik yang bisa akses
-if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'pemilik' && $_SESSION['role'] !== 'owner')) {
-    header("Location: ../login.php");
-    exit;
-}
+
 
 // ====== Query Dashboard ======
 // Total barang
@@ -32,8 +29,8 @@ $produkLaris = $koneksi->query("
 ?>
 
 <div class="container mt-4">
-    <!-- side bar -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+    <!-- SIDEBAR OWNER (Agar bisa navigasi) -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu">
         <div class="offcanvas-header">
             <div class="d-flex align-items-center">
                 <div class="user-avatar me-2" style="background: <?= htmlspecialchars($avatarBg) ?>;">
@@ -44,16 +41,16 @@ $produkLaris = $koneksi->query("
                     <small class="text-muted"><?= htmlspecialchars($roleLabel) ?></small>
                 </div>
             </div>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush">
-                <a href="/toko_beras/Pemilik/dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
-                <a href="/toko_beras/pemilik/laporan.php" class="list-group-item list-group-item-action">Laporan</a>
-                <a href="/toko_beras/pemilik/total_stok.php" class="list-group-item list-group-item-action">Total Stok</a>
-                <a href="/toko_beras/pemilik/input_data.php" class="list-group-item list-group-item-action">Input Data</a>
+                <!-- Sesuaikan link 'laporan.php' dengan nama file laporan Anda yang benar -->
+                <a href="dashboard.php" class="list-group-item list-group-item-action active">Dashboard</a>
+                <a href="laporan.php" class="list-group-item list-group-item-action ">Laporan Eksekutif</a>
+                <a href="input_data.php" class="list-group-item list-group-item-action">Kelola Data Master</a>
                 <div class="list-group-item">
-                    <a href="/toko_beras/logout.php" class="btn btn-outline-danger w-100">Logout</a>
+                    <a href="../logout.php" class="btn btn-outline-danger w-100">Logout</a>
                 </div>
             </div>
         </div>

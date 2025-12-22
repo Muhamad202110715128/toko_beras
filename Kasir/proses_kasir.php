@@ -58,8 +58,8 @@ elseif ($aksi === 'return_barang') {
 
     $koneksi->query("DELETE FROM stok_keluar WHERE id = '$id_keluar'");
 
-    // FIXED: Link Absolute untuk Admin & Owner
-    // Pastikan file laporan owner Anda bernama 'laporan_owner.php' di folder 'owner'
+    // FIXED: Link Absolute untuk Admin & Pemilik
+    // Pastikan file laporan Pemilik Anda bernama 'laporan_Pemilik.php' di folder 'Pemilik'
     kirimNotifikasi(
         $koneksi,
         'admin',
@@ -70,10 +70,10 @@ elseif ($aksi === 'return_barang') {
 
     kirimNotifikasi(
         $koneksi,
-        'owner',
+        'Pemilik',
         "Laporan Return",
         "Barang $jenis ($merk) direturn $jumlah kg oleh kasir.",
-        '/toko_beras/owner/laporan.php'
+        '/toko_beras/Pemilik/laporan.php'
     );
 
     echo "<script>alert('Barang berhasil di-return!'); window.location='items.php';</script>";

@@ -100,8 +100,8 @@ $stok_low = $koneksi->query("
     <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
         <div class="offcanvas-header">
             <div class="d-flex align-items-center">
-                <div class="user-avatar me-2" style="background: <?= htmlspecialchars($avatarBg ?? '#eee') ?>;">
-                    <?= $icon ?? '<i class="bi bi-person"></i>' ?>
+                <div class="user-avatar me-2" style="background: <?= htmlspecialchars($avatarBg) ?>;">
+                    <?= $icon ?>
                 </div>
                 <div>
                     <div class="fw-bold"><?= htmlspecialchars($username ?: $roleLabel) ?></div>
@@ -112,9 +112,11 @@ $stok_low = $koneksi->query("
         </div>
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush">
-                <a href="/toko_beras/kasir/dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
-                <a href="/toko_beras/kasir/order.php" class="list-group-item list-group-item-action">Transaksi</a>
-                <a href="/toko_beras/kasir/laporan.php" class="list-group-item list-group-item-action">Laporan</a>
+                <a href="/toko_beras/kasir/dashboard.php" class="list-group-item list-group-item-action ">Dashboard</a>
+                <a href="/toko_beras/kasir/order.php" class="list-group-item list-group-item-action active">Transaksi</a>
+                <a href="/toko_beras/kasir/items.php" class="list-group-item list-group-item-action ">Items</a>
+                <a href="/toko_beras/kasir/revenue.php" class="list-group-item list-group-item-action">revenue</a>
+                <a href="/toko_beras/kasir/sales.php" class="list-group-item list-group-item-action">sales</a>
                 <div class="list-group-item">
                     <a href="/toko_beras/logout.php" class="btn btn-outline-danger w-100">Logout</a>
                 </div>
