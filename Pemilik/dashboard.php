@@ -11,8 +11,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // ====== Query Dashboard ======
 // Total barang
-$stokQuery = $koneksi->query("SELECT COUNT(*) AS total_item FROM barang");
-$stokData = $stokQuery->fetch_assoc();
+// (diganti: hitung berdasarkan data nyata di tabel stok_masuk — jumlah item unik berdasarkan kombinasi jenis+merk)
+$totQ = $koneksi->query("SELECT COUNT(DISTINCT CONCAT(jenis_beras, '||', COALESCE(merk,''))) AS total_item FROM stok_masuk");
+$stokMasuk = $totQ ? $totQ->fetch_assoc() : ['total_item' => 0];
 
 // Total penjualan
 $penjualanQuery = $koneksi->query("SELECT SUM(total_harga) AS total_penjualan FROM penjualan");
@@ -64,7 +65,7 @@ $produkLaris = $koneksi->query("
             <div class="card text-center shadow-sm border-success">
                 <div class="card-body">
                     <h5>Total Barang</h5>
-                    <h3><?= $stokData['total_item'] ?? 0; ?></h3>
+                    <h3><?= $stokMasuk['total_item'] ?? 0; ?></h3>
                 </div>
             </div>
         </div>

@@ -70,41 +70,7 @@ $total_expired = $q_exp->fetch_assoc()['jumlah_batch'] ?? 0;
 
 ?>
 
-<style>
-    /* CSS Khusus Cetak */
-    @media print {
-
-        .no-print,
-        .offcanvas,
-        .btn,
-        form {
-            display: none !important;
-        }
-
-        .card {
-            border: none !important;
-            shadow: none !important;
-        }
-
-        .table {
-            width: 100% !important;
-            border: 1px solid #000;
-        }
-
-        body {
-            background: #fff;
-        }
-    }
-
-    .card-dashboard {
-        border-left: 4px solid;
-        transition: transform 0.2s;
-    }
-
-    .card-dashboard:hover {
-        transform: translateY(-3px);
-    }
-</style>
+<link rel="stylesheet" href="laporan.css">
 
 <div class="container mt-4">
 

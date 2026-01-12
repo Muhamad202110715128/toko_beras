@@ -5,6 +5,7 @@ include '../includes/header.php';
 // Ambil Data untuk Dropdown Modal Request
 $jenis_q = $koneksi->query("SELECT * FROM jenis_beras ORDER BY nama_jenis ASC");
 $merk_q  = $koneksi->query("SELECT * FROM merk_beras ORDER BY nama_merk ASC");
+
 ?>
 <style>
     .table-out thead th {
@@ -42,16 +43,22 @@ $merk_q  = $koneksi->query("SELECT * FROM merk_beras ORDER BY nama_merk ASC");
 </div>
 
 
-<div class="d-flex align-items-center justify-content-between mb-3">
+<div class="d-flex align-items-center justify-content-between mb-3 p-2">
     <div>
-        <h5 class="card-title mb-0">Riwayat Item Keluar</h5>
-        <small class="text-muted">Daftar barang yang telah dikeluarkan/terjual</small>
+        <h4 class="card-title mb-0">Riwayat Item Keluar</h4>
+        <small class="text-muted">Daftar barang yang tersedia</small>
     </div>
 
-    <!-- BUTTON 1: PERMINTAAN STOK KE ADMIN -->
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRequest">
-        <i class="bi bi-box-arrow-in-down"></i> Minta Stok ke Admin
-    </button>
+    <div class="column-gap-3" role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-outline-info"
+            data-bs-toggle="modal" data-bs-target="#modalInfoStok">Info</button>
+
+        <!-- BUTTON 1: PERMINTAAN STOK KE ADMIN -->
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalRequest">
+            <i class="bi bi-box-arrow-in-down"></i> Minta Stok ke Admin
+        </button>
+    </div>
+
 </div>
 
 <hr>
@@ -224,6 +231,113 @@ $merk_q  = $koneksi->query("SELECT * FROM merk_beras ORDER BY nama_merk ASC");
         </form>
     </div>
 </div>
+
+<!-- ========================== -->
+<!-- MODAL INFO STOK GUDANG -->
+<!-- ========================== -->
+<div class="modal fade" id="modalInfoStok" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-info-circle"></i> Informasi Stok Gudang
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                <?php
+                $qInfo = $koneksi->query("
+                    SELECT 
+                        jenis_beras,
+                        merk,
+                        SUM(jumlah) AS total_stok,
+                        MIN(tanggal_kadaluarsa) AS kadaluarsa
+                    FROM stok_masuk
+                    GROUP BY jenis_beras, merk
+                    ORDER BY jenis_beras ASC
+                ");
+
+                $today = new DateTime(); // Tanggal hari ini
+                ?>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="text-center bg-light">
+                            <tr>
+                                <th>No</th>
+                                <th>Jenis Beras</th>
+                                <th>Merk</th>
+                                <th>Total Stok (kg)</th>
+                                <th>Kadaluarsa Terdekat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($qInfo && $qInfo->num_rows > 0) {
+                                $no = 1;
+                                while ($r = $qInfo->fetch_assoc()) {
+                                    $stok = (float)$r['total_stok'];
+                                    $tgl_kadaluarsa = $r['kadaluarsa'];
+
+                                    // Logika Pewarnaan
+                                    $rowClass = "";
+                                    if (!empty($tgl_kadaluarsa)) {
+                                        $expDate = new DateTime($tgl_kadaluarsa);
+                                        $diff = $today->diff($expDate);
+                                        $daysRemaining = (int)$diff->format("%r%a"); // %r untuk tanda negatif jika sudah lewat
+
+                                        if ($daysRemaining < 0) {
+                                            // Merah: Sudah lewat kadaluarsa
+                                            $rowClass = "table-danger";
+                                        } elseif ($daysRemaining <= 30) {
+                                            // Orange: Mendekati kadaluarsa (kurang dari 30 hari)
+                                            $rowClass = "style='background-color: #f7b100ff; color: white;'";
+                                        }
+                                    }
+
+                                    // Kuning: Stok menipis (contoh: di bawah 50kg)
+                                    // Jika sudah merah/orange, warna ini akan ditimpa jika kita pakai if-else, 
+                                    // tapi di sini saya buat prioritas: Kadaluarsa > Stok Tipis.
+                                    if ($rowClass == "" && $stok <= 50) {
+                                        $rowClass = "table-warning";
+                                    }
+
+                                    // Render Baris
+                                    // Gunakan class jika menggunakan bootstrap default, atau style manual
+                                    $attr = (strpos($rowClass, 'style=') !== false) ? $rowClass : "class='$rowClass'";
+
+                                    echo "<tr $attr>
+                                        <td class='text-center'>{$no}</td>
+                                        <td>{$r['jenis_beras']}</td>
+                                        <td class='text-center'>{$r['merk']}</td>
+                                        <td class='text-end fw-bold'>{$stok} kg</td>
+                                        <td class='text-center'>" . ($tgl_kadaluarsa ?: '-') . "</td>
+                                    </tr>";
+                                    $no++;
+                                }
+                            } else {
+                                echo "<tr><td colspan='5' class='text-center text-muted'>Data stok belum tersedia.</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-3 d-flex flex-wrap gap-2">
+                    <small><span class="badge bg-danger">Merah</span> Kadaluarsa</small>
+                    <small><span class="badge bg-warning text-dark">Kuning</span> Stok < 50kg</small>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

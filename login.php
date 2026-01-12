@@ -59,9 +59,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <title>Login - Sistem Stok Beras</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            background-image: url("beras.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
 </head>
 
-<body class="bg-light d-flex justify-content-center align-items-center" style="height:100vh;">
+<body class=" d-flex justify-content-center align-items-center" style="height:100vh;">
     <div class="card shadow p-4" style="width: 350px;">
         <h4 class="text-center mb-3">Login</h4>
 
@@ -78,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label class="form-label">Password</label>
                 <input type="password" name="password" class="form-control" required>
             </div>
-            <button type="submit" class="btn btn-success w-100">Login</button>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
         </form>
     </div>
 </body>

@@ -10,6 +10,20 @@ $role = $_SESSION['role'] ?? null;
 $username = $_SESSION['username'] ?? '';
 
 // 2. LOGIKA TAMPILAN ROLE
+$folderNotif = 'Admin'; // default aman
+
+if (!empty($_SESSION['role'])) {
+  $role = strtolower($_SESSION['role']);
+
+  if ($role === 'admin') {
+    $folderNotif = 'Admin';
+  } elseif ($role === 'kasir') {
+    $folderNotif = 'Kasir';
+  } elseif ($role === 'pemilik') {
+    $folderNotif = 'Pemilik';
+  }
+}
+
 $icon = '👤'; // Saya kembalikan ke icon orang standar agar tidak error encoding
 $avatarBg = '#6c757d';
 $roleLabel = '';
@@ -123,9 +137,6 @@ if ($role && isset($koneksi)) {
                 <?php endif; ?>
               </div>
 
-              <div class="footer">
-                <a href="/toko_beras/Admin/notifikasi_all.php" class="small text-decoration-none">Lihat semua notifikasi</a>
-              </div>
             </div>
           </div>
         <?php endif; ?>

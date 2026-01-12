@@ -13,7 +13,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 
 // ==========================================
-// 1. QUERY CARD RINGKASAN
+// 1. QUERY DATA
 // ==========================================
 
 // A. Total Stok Keluar (Semua Waktu)
@@ -21,8 +21,7 @@ $q_total = $koneksi->query("SELECT SUM(jumlah) as total_kg FROM stok_keluar");
 $d_total = $q_total->fetch_assoc();
 $total_keluar = $d_total['total_kg'] ?? 0;
 
-// B. Permintaan Masuk (Dari Notifikasi Kasir)
-// Kita hitung notifikasi yang judulnya mengandung "Permintaan Stok" dan statusnya unread
+// B. Permintaan Masuk (Counter)
 $q_req = $koneksi->query("
     SELECT COUNT(*) as jum 
     FROM notifikasi 
@@ -33,6 +32,24 @@ $q_req = $koneksi->query("
 $d_req = $q_req->fetch_assoc();
 $total_request = $d_req['jum'] ?? 0;
 
+// --- TAMBAHAN BARU: QUERY UNTUK ISI MODAL POP-UP ---
+
+// C. Data Rincian Stok Keluar per Jenis (Untuk Modal 1)
+$q_breakdown = $koneksi->query("
+    SELECT jenis_beras, SUM(jumlah) as total 
+    FROM stok_keluar 
+    GROUP BY jenis_beras 
+    ORDER BY total DESC
+");
+
+// D. Data List Permintaan (Untuk Modal 2)
+$q_list_req = $koneksi->query("
+    SELECT * FROM notifikasi 
+    WHERE user_role = 'admin' 
+    AND status = 'unread' 
+    AND judul LIKE 'Permintaan Stok%' 
+    ORDER BY created_at DESC
+");
 
 // AMBIL DATA MASTER UNTUK DROPDOWN
 $jenis_q = $koneksi->query("SELECT * FROM jenis_beras ORDER BY nama_jenis ASC");
@@ -57,14 +74,16 @@ $merk_q  = $koneksi->query("SELECT * FROM merk_beras ORDER BY nama_merk ASC");
         border-left: 5px solid;
         box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         transition: transform 0.2s;
+        cursor: pointer;
+        /* Menandakan bisa diklik */
     }
 
     .card-stat:hover {
-        transform: translateY(-3px);
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
     }
 </style>
 
-<!-- SIDEBAR -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu">
     <div class="offcanvas-header">
         <div class="d-flex align-items-center">
@@ -94,7 +113,6 @@ $merk_q  = $koneksi->query("SELECT * FROM merk_beras ORDER BY nama_merk ASC");
 
 <div class="container mt-4">
 
-    <!-- HEADER PAGE -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="fw-bold mb-0">📤 Data Stok Keluar</h4>
@@ -105,12 +123,10 @@ $merk_q  = $koneksi->query("SELECT * FROM merk_beras ORDER BY nama_merk ASC");
         </a>
     </div>
 
-    <!-- KARTU RINGKASAN (DASHBOARD) -->
     <div class="row mb-4">
 
-        <!-- Card 1: Total Stok Keluar -->
         <div class="col-md-6 mb-3 mb-md-0">
-            <div class="card h-100 card-stat border-warning">
+            <div class="card h-100 card-stat border-warning" data-bs-toggle="modal" data-bs-target="#modalRincianKeluar" title="Klik untuk melihat rincian">
                 <div class="card-body d-flex align-items-center">
                     <div class="bg-warning bg-opacity-10 text-dark rounded p-3 me-3">
                         <i class="bi bi-box-arrow-up fs-2"></i>
@@ -120,14 +136,14 @@ $merk_q  = $koneksi->query("SELECT * FROM merk_beras ORDER BY nama_merk ASC");
                         <h3 class="fw-bold mb-0 text-dark">
                             <?= number_format($total_keluar, 0, ',', '.') ?> <small class="fs-6 text-muted">kg</small>
                         </h3>
+                        <small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-hand-index-thumb"></i> Klik untuk rincian</small>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Card 2: Permintaan Masuk -->
         <div class="col-md-6">
-            <div class="card h-100 card-stat border-info">
+            <div class="card h-100 card-stat border-info" data-bs-toggle="modal" data-bs-target="#modalListRequest" title="Klik untuk melihat permintaan">
                 <div class="card-body d-flex align-items-center">
                     <div class="bg-info bg-opacity-10 text-primary rounded p-3 me-3">
                         <i class="bi bi-envelope-exclamation fs-2"></i>
@@ -149,9 +165,7 @@ $merk_q  = $koneksi->query("SELECT * FROM merk_beras ORDER BY nama_merk ASC");
 
     </div>
 
-    <!-- CARD TABEL -->
     <div class="card shadow-sm border-0">
-        <!-- Fitur Pencarian -->
         <div class="card-header bg-white py-3">
             <div class="row g-2 align-items-center">
                 <div class="col-md-6">
@@ -236,7 +250,74 @@ $merk_q  = $koneksi->query("SELECT * FROM merk_beras ORDER BY nama_merk ASC");
     </div>
 </div>
 
-<!-- FORM EDIT MODAL -->
+<div class="modal fade" id="modalRincianKeluar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-warning bg-opacity-25">
+                <h5 class="modal-title fw-bold"><i class="bi bi-pie-chart-fill"></i> Rincian Stok Keluar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small">Akumulasi stok keluar berdasarkan jenis beras:</p>
+                <ul class="list-group">
+                    <?php
+                    if ($q_breakdown && $q_breakdown->num_rows > 0) {
+                        while ($br = $q_breakdown->fetch_assoc()) {
+                            echo '<li class="list-group-item d-flex justify-content-between align-items-center">
+                                    ' . htmlspecialchars($br['jenis_beras']) . '
+                                    <span class="badge bg-warning text-dark rounded-pill">' . number_format($br['total'], 0, ',', '.') . ' kg</span>
+                                  </li>';
+                        }
+                    } else {
+                        echo '<li class="list-group-item text-center text-muted">Belum ada data.</li>';
+                    }
+                    ?>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalListRequest" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info bg-opacity-25">
+                <h5 class="modal-title fw-bold"><i class="bi bi-inbox-fill"></i> Permintaan Terbaru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group list-group-flush">
+                    <?php
+                    if ($q_list_req && $q_list_req->num_rows > 0) {
+                        while ($req = $q_list_req->fetch_assoc()) {
+                            $time = date('d M H:i', strtotime($req['created_at']));
+                            echo '<div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                      <h6 class="mb-1 text-primary">' . htmlspecialchars($req['judul']) . '</h6>
+                                      <small class="text-muted">' . $time . '</small>
+                                    </div>
+                                    <p class="mb-1 small">' . htmlspecialchars($req['pesan']) . '</p>
+                                  </div>';
+                        }
+                    } else {
+                        echo '<div class="text-center py-3 text-muted">
+                                <i class="bi bi-check-circle fs-3 d-block mb-2"></i>
+                                Tidak ada permintaan baru yang belum dibaca.
+                              </div>';
+                    }
+                    ?>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <form action="proses_edit_stok_keluar.php" method="POST" class="modal-content">
@@ -308,7 +389,6 @@ $merk_q  = $koneksi->query("SELECT * FROM merk_beras ORDER BY nama_merk ASC");
     </div>
 </div>
 
-<!-- JAVASCRIPT: Modal & Pencarian -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
 

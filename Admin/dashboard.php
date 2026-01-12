@@ -58,7 +58,7 @@ $stokTersedia = $stokMasuk - $stokKeluar;
         <h3 class="mb-4">Dashboard Stok Beras</h3>
 
         <div class="row text-center">
-            <div class="col-md-4 mb-3">
+            <div class="Total col-md-4 mb-3">
                 <a href="dashboard.php" class="btn btn-success btn-lg w-100 py-4">
                     <div class="h6 mb-1">Total Stok</div>
                     <div class="h3 mb-0"><?= $stokMasuk ?> kg</div>
