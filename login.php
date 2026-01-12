@@ -64,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin: 0;
             min-height: 100vh;
 
-            background-image: url("beras.jpg");
+            background-image: url("padi.jpg");
             background-repeat: no-repeat;
             background-size: cover;
             background-position: center;
