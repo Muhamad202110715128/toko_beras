@@ -6,6 +6,14 @@ include '../includes/header.php';
 $jenis_q = $koneksi->query("SELECT * FROM jenis_beras ORDER BY nama_jenis ASC");
 $merk_q  = $koneksi->query("SELECT * FROM merk_beras ORDER BY nama_merk ASC");
 
+
+// ===== Ambil stok menipis =====
+$stok_low = $koneksi->query("
+    SELECT jenis_beras, merk, SUM(jumlah) as stok_tersisa
+    FROM stok_masuk
+    GROUP BY jenis_beras, merk
+    HAVING stok_tersisa <= 20
+");
 ?>
 <style>
     .table-out thead th {
@@ -363,5 +371,36 @@ $merk_q  = $koneksi->query("SELECT * FROM merk_beras ORDER BY nama_merk ASC");
         });
     });
 </script>
+
+
+<h5 class="mb-3 text-danger">📅 Notifikasi Stok Menipis</h5>
+<div class="card border-danger shadow-sm">
+    <div class="card-body">
+        <?php if ($stok_low && $stok_low->num_rows > 0): ?>
+            <table class="table table-sm table-bordered text-center align-middle">
+                <thead class="table-danger">
+                    <tr>
+                        <th>Jenis Beras</th>
+                        <th>Merk</th>
+                        <th>Sisa Stok (kg)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($s = $stok_low->fetch_assoc()): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($s['jenis_beras']) ?></td>
+                            <td><?= htmlspecialchars($s['merk']) ?></td>
+                            <td class="fw-bold"><?= (int)$s['stok_tersisa'] ?></td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <div class="alert alert-success mb-0">✅ Semua stok masih aman.</div>
+        <?php endif; ?>
+    </div>
+</div>
+</div>
+
 
 <?php include '../includes/footer.php'; ?>

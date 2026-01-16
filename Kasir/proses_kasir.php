@@ -17,7 +17,7 @@ if ($aksi === 'request_stok') {
     $pesan = "Kasir meminta stok $jumlah kg. Catatan: $catatan";
 
     // FIXED: Link Absolute ke Admin
-    kirimNotifikasi($koneksi, 'admin', $judul, $pesan, '/toko_beras/admin/stok_keluar.php');
+    kirimNotifikasi($koneksi, 'admin', $judul, $pesan, '/toko_beras/admin/input_stok_keluar.php');
 
     // FIXED: Link Konfirmasi ke Kasir
     kirimNotifikasi($koneksi, 'kasir', 'Permintaan Terkirim', "Request $jenis ($jumlah kg) terkirim.", '#');

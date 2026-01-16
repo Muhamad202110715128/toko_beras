@@ -49,7 +49,6 @@ $produkLaris = $koneksi->query("
                 <!-- Sesuaikan link 'laporan.php' dengan nama file laporan Anda yang benar -->
                 <a href="dashboard.php" class="list-group-item list-group-item-action active">Dashboard</a>
                 <a href="laporan.php" class="list-group-item list-group-item-action ">Laporan Eksekutif</a>
-                <a href="input_data.php" class="list-group-item list-group-item-action">Kelola Data Master</a>
                 <div class="list-group-item">
                     <a href="../logout.php" class="btn btn-outline-danger w-100">Logout</a>
                 </div>

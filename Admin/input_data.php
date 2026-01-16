@@ -2,8 +2,8 @@
 include '../includes/config.php';
 include '../includes/header.php';
 
-// Cek Akses Owner
-if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'owner' && $_SESSION['role'] !== 'pemilik')) {
+// PERUBAHAN 1: Cek Akses Admin (Bukan Owner lagi)
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     echo "<script>window.location='../login.php';</script>";
     exit;
 }
@@ -50,7 +50,6 @@ $merk_beras  = $koneksi->query("SELECT * FROM merk_beras ORDER BY id_merk DESC")
     }
 </style>
 
-<!-- SIDEBAR OWNER (Agar bisa navigasi) -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="sidebarMenu">
     <div class="offcanvas-header">
         <div class="d-flex align-items-center">
@@ -66,10 +65,12 @@ $merk_beras  = $koneksi->query("SELECT * FROM merk_beras ORDER BY id_merk DESC")
     </div>
     <div class="offcanvas-body p-0">
         <div class="list-group list-group-flush">
-            <!-- Sesuaikan link 'laporan.php' dengan nama file laporan Anda yang benar -->
             <a href="dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
-            <a href="laporan.php" class="list-group-item list-group-item-action">Laporan Eksekutif</a>
-            <a href="input_data.php" class="list-group-item list-group-item-action active">Kelola Data Master</a>
+            <a href="stok_masuk.php" class="list-group-item list-group-item-action">Stok Gudang</a>
+            <a href="stok_keluar.php" class="list-group-item list-group-item-action">Stok Keluar</a>
+            <a href="low_stock.php" class="list-group-item list-group-item-action">Low Stock</a>
+            <a href="input_data.php" class="list-group-item list-group-item-action active">Input Data</a>
+
             <div class="list-group-item">
                 <a href="../logout.php" class="btn btn-outline-danger w-100">Logout</a>
             </div>
@@ -79,8 +80,8 @@ $merk_beras  = $koneksi->query("SELECT * FROM merk_beras ORDER BY id_merk DESC")
 
 <div class="container mt-4">
     <h4 class="mb-4 fw-bold text-dark"><i class="bi bi-database-gear me-2"></i> Kelola Data Master</h4>
+    <p class="text-muted">Tambah atau hapus referensi Jenis & Merk beras.</p>
 
-    <!-- Notifikasi Alert -->
     <?php if ($pesan): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i> <?= $pesan ?>
@@ -90,14 +91,12 @@ $merk_beras  = $koneksi->query("SELECT * FROM merk_beras ORDER BY id_merk DESC")
 
     <div class="row g-4">
 
-        <!-- === KOLOM 1: JENIS BERAS === -->
         <div class="col-md-6">
             <div class="card shadow-sm h-100 border-0">
                 <div class="card-header bg-success text-white card-header-custom">
                     <i class="bi bi-tag me-2"></i> Jenis Beras
                 </div>
                 <div class="card-body">
-                    <!-- Form Tambah -->
                     <form method="POST" class="input-group mb-4">
                         <input type="text" name="nama_jenis" class="form-control" placeholder="Nama Jenis (Misal: Pandan Wangi)" required>
                         <button type="submit" name="tambah_jenis" class="btn btn-success">
@@ -105,7 +104,6 @@ $merk_beras  = $koneksi->query("SELECT * FROM merk_beras ORDER BY id_merk DESC")
                         </button>
                     </form>
 
-                    <!-- Tabel Data -->
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light text-center">
@@ -148,14 +146,12 @@ $merk_beras  = $koneksi->query("SELECT * FROM merk_beras ORDER BY id_merk DESC")
             </div>
         </div>
 
-        <!-- === KOLOM 2: MERK BERAS === -->
         <div class="col-md-6">
             <div class="card shadow-sm h-100 border-0">
                 <div class="card-header bg-primary text-white card-header-custom">
                     <i class="bi bi-award me-2"></i> Merk Beras
                 </div>
                 <div class="card-body">
-                    <!-- Form Tambah -->
                     <form method="POST" class="input-group mb-4">
                         <input type="text" name="nama_merk" class="form-control" placeholder="Nama Merk (Misal: Idola, Maknyus)" required>
                         <button type="submit" name="tambah_merk" class="btn btn-primary">
@@ -163,7 +159,6 @@ $merk_beras  = $koneksi->query("SELECT * FROM merk_beras ORDER BY id_merk DESC")
                         </button>
                     </form>
 
-                    <!-- Tabel Data -->
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
                             <thead class="table-light text-center">
