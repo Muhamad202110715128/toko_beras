@@ -38,11 +38,11 @@ $stok_low = $koneksi->query("
     </div>
     <div class="offcanvas-body p-0">
         <div class="list-group list-group-flush">
-            <a href="/toko_beras/kasir/dashboard.php" class="list-group-item list-group-item-action">Dashboard</a>
-            <a href="/toko_beras/kasir/order.php" class="list-group-item list-group-item-action">Transaksi</a>
-            <a href="/toko_beras/kasir/items.php" class="list-group-item list-group-item-action active">Items</a>
-            <a href="/toko_beras/kasir/revenue.php" class="list-group-item list-group-item-action">revenue</a>
-            <a href="/toko_beras/kasir/sales.php" class="list-group-item list-group-item-action">sales</a>
+            <a href="/toko_beras/kasir/dashboard.php" class="list-group-item list-group-item-action ">Dashboard</a>
+            <a href="/toko_beras/kasir/order.php" class="list-group-item list-group-item-action ">Pecatatan Pemesanan</a>
+            <a href="/toko_beras/kasir/items.php" class="list-group-item list-group-item-action active">Stok Beras</a>
+            <a href="/toko_beras/kasir/revenue.php" class="list-group-item list-group-item-action">Penjualan Harian</a>
+            <a href="/toko_beras/kasir/sales.php" class="list-group-item list-group-item-action">Sales</a>
             <div class="list-group-item">
                 <a href="/toko_beras/logout.php" class="btn btn-outline-danger w-100">Logout</a>
             </div>

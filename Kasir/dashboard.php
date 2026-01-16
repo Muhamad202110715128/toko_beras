@@ -55,10 +55,10 @@ $total_items = $total_items_data['total_item'] ?? 0;
         <div class="offcanvas-body p-0">
             <div class="list-group list-group-flush">
                 <a href="/toko_beras/kasir/dashboard.php" class="list-group-item list-group-item-action active">Dashboard</a>
-                <a href="/toko_beras/kasir/order.php" class="list-group-item list-group-item-action">Transaksi</a>
-                <a href="/toko_beras/kasir/items.php" class="list-group-item list-group-item-action ">Items</a>
-                <a href="/toko_beras/kasir/revenue.php" class="list-group-item list-group-item-action">revenue</a>
-                <a href="/toko_beras/kasir/sales.php" class="list-group-item list-group-item-action">sales</a>
+                <a href="/toko_beras/kasir/order.php" class="list-group-item list-group-item-action ">Pecatatan Pemesanan</a>
+                <a href="/toko_beras/kasir/items.php" class="list-group-item list-group-item-action ">Stok Beras</a>
+                <a href="/toko_beras/kasir/revenue.php" class="list-group-item list-group-item-action">Penjualan Harian</a>
+                <a href="/toko_beras/kasir/sales.php" class="list-group-item list-group-item-action">Sales</a>
                 <div class="list-group-item">
                     <a href="/toko_beras/logout.php" class="btn btn-outline-danger w-100">Logout</a>
                 </div>

@@ -59,22 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <title>Login - Sistem Stok Beras</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            min-height: 100vh;
-
-            background-image: url("padi.jpg");
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
+    <link rel="stylesheet" href="login.css">
 </head>
 
 <body class=" d-flex justify-content-center align-items-center" style="height:100vh;">
